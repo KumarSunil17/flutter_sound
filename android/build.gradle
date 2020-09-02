@@ -1,8 +1,13 @@
-ext.flutterFFmpegPackage = 'audio'
+static String safePackageName(String prop) {
+    prop.replace("-lts", "")
+}
+
+static String safePackageVersion(String prop, String version, String ltsVersion) {
+    prop.contains("-lts") ? ltsVersion + ".LTS" : version
+}
 
 group 'com.dooboolab.fluttersound'
 version '1.0-SNAPSHOT'
-
 
 buildscript {
     repositories {
@@ -25,10 +30,10 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 24 // 16
+        minSdkVersion safeExtGet('flutterFFmpegPackage', 'https').contains("-lts") ? 16 : 24
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -46,7 +51,7 @@ String safeExtGet(String prop, String fallback) {
 
 
 dependencies {
-    implementation 'com.arthenica:mobile-ffmpeg-audio:4.3.2'
+    implementation 'com.arthenica:mobile-ffmpeg-' + safePackageName(safeExtGet('flutterFFmpegPackage', 'https')) + ':' + safePackageVersion(safeExtGet('flutterFFmpegPackage', 'https'), '4.3.1', '4.3.1')
     implementation 'androidx.core:core:1.0.0'
     implementation 'androidx.media:media:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
